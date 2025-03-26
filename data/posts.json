@@ -1,0 +1,218 @@
+[
+  {
+    "id": "245f1ed5-c510-40f3-88c3-cb45bbeb92a1",
+    "title": "probando dos",
+    "content": "sfs<b>d<font face=\"Times New Roman\">fs</font>d</b>f<font face=\"Arial\">s<i>dfal</i></font><i>kfa<font color=\"#ff00ff\">dsfka<font face=\"Courier New\">d</font></font><font face=\"Courier New\">sl</font>kfas</i>df",
+    "author": "eduardo",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "649739e1-d137-49e8-82db-f19a1d74d60e",
+    "title": "Probando el nuevo editor",
+    "content": "<h2 style=\"text-align: center;\">hola <b>hol<font color=\"#00ffff\">a hola h</font><u><font color=\"#00ffff\">o</font>la</u></b><u> <font face=\"Times New Roman\">hola&nbsp;</font></u></h2>",
+    "author": "eduardo",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "71cbe801-947e-4b80-ba4d-6604a7e95d74",
+    "title": "fokin tato",
+    "content": "esta red social es una mierda",
+    "author": "nathy",
+    "date": "2025-03-25",
+    "likes": {
+      "eduardo": true,
+      "nathy": true
+    },
+    "comments": [
+      {
+        "id": "6fddf8af-1c79-4619-ad6c-49125cedcfb1",
+        "author": "eduardoX",
+        "content": "que te pasa ???",
+        "date": "2025-03-25",
+        "likes": {}
+      },
+      {
+        "id": "21ea6c8d-c727-4d89-8348-24c0229249ad",
+        "author": "eduardo",
+        "content": "te voy a banear nathy\n",
+        "date": "2025-03-25",
+        "likes": {}
+      },
+      {
+        "id": "7b05f934-7849-4407-841e-7bc8130fbbdb",
+        "author": "elpepe",
+        "content": "como eso\n",
+        "date": "2025-03-25",
+        "likes": {}
+      }
+    ]
+  },
+  {
+    "id": "887af7bf-e565-4ce2-a89d-229dabffdbec",
+    "title": "probando",
+    "content": "mira tu",
+    "author": "eduardoX",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "73fda819-a953-4f3a-a445-3f02c887aba9",
+    "title": "probando 2",
+    "content": "hola 2",
+    "author": "nathy",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": [
+      {
+        "id": "9cfa0929-c0e3-4110-b66f-f2dbdb47161e",
+        "author": "nathy",
+        "content": ":v",
+        "date": "2025-03-25",
+        "likes": {
+          "nathy": true,
+          "eduardoX": true
+        }
+      },
+      {
+        "id": "af72ac10-71f0-470d-8d93-6a46607e4523",
+        "author": "eduardoX",
+        "content": "ta weno",
+        "date": "2025-03-25",
+        "likes": {}
+      }
+    ]
+  },
+  {
+    "id": "cfb7f960-fb88-486a-a29c-053b9aaa7f83",
+    "title": "probando",
+    "content": "hola\n",
+    "author": "nathy",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "2fe68c0d-cde3-4d00-ac82-3c9e8b28f654",
+    "title": "probando",
+    "content": "hola\n",
+    "author": "nathy",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "fed644eb-33fa-48e6-9839-917feb5f0c9a",
+    "title": "Probando ",
+    "content": "soy nathy uwu :v me gusta pompurin",
+    "author": "nathy",
+    "date": "2025-03-25",
+    "likes": {},
+    "comments": []
+  },
+  {
+    "id": "9f804915-3d01-49ea-bfe8-eaea927b2039",
+    "title": "hola",
+    "content": "probando\r\n",
+    "author": "eduardo",
+    "date": "2025-03-25",
+    "likes": {
+      "eduardo": true
+    },
+    "comments": [
+      {
+        "id": "2406f4cf-a331-47b1-852f-4b181bee4d86",
+        "author": "eduardo",
+        "content": "buena\n",
+        "date": "2025-03-25",
+        "likes": {}
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "title": "Bienvenido a mi blog",
+    "content": "Este es mi primer post en el blog personal de Edudev.",
+    "date": "2025-03-24",
+    "author": "admin",
+    "likes": {
+      "eduardo": true,
+      "admin": true
+    },
+    "comments": [
+      {
+        "id": "c1",
+        "author": "eduardo",
+        "content": "¡Gran post! Estoy emocionado de ver más contenido.",
+        "date": "2025-03-24",
+        "likes": {
+          "admin": true
+        }
+      },
+      {
+        "id": "c2",
+        "author": "nathy",
+        "content": "Muy interesante, ¿podrías hablar más sobre este tema?",
+        "date": "2025-03-24",
+        "likes": {}
+      }
+    ]
+  },
+  {
+    "id": "308b66e1-45ec-4b67-86f0-30d79b665d7f",
+    "title": "Probando blogs",
+    "content": "Hola! Este es un post de prueba para mostrar las nuevas funcionalidades del blog. ¿Qué les parece?",
+    "date": "2025-03-24",
+    "author": "eduardo",
+    "likes": {
+      "eduardo": true,
+      "nathy": true
+    },
+    "comments": [
+      {
+        "id": "c3",
+        "author": "admin",
+        "content": "Excelente iniciativa, sigue así.",
+        "date": "2025-03-24",
+        "likes": {
+          "eduardo": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "040f2ad9-c34e-475f-b8ff-995fa17a2c98",
+    "title": "Novedades tecnológicas",
+    "content": "En este post hablaremos sobre las últimas tendencias en desarrollo web y tecnologías emergentes.",
+    "date": "2025-03-24",
+    "author": "nathy",
+    "likes": {
+      "eduardo": true,
+      "admin": true,
+      "eduardo2": true,
+      "eduardoX": true,
+      "elpepe": true,
+      "nathy": true
+    },
+    "comments": [
+      {
+        "id": "33019fd7-5e1d-48bf-8d1a-3d7b9c9da44a",
+        "author": "nathy",
+        "content": "genial",
+        "date": "2025-03-25",
+        "likes": {}
+      },
+      {
+        "id": "f3fba840-6bb7-4258-b27b-4366717984aa",
+        "author": "elpepe",
+        "content": "hola soy nuevo\n",
+        "date": "2025-03-25",
+        "likes": {}
+      }
+    ]
+  }
+]
