@@ -1,16 +1,31 @@
-# Fresh project
+# Edudev Blog
 
-Your new Fresh project is ready to go. You can follow the Fresh "Getting
-Started" guide here: https://fresh.deno.dev/docs/getting-started
+Un blog moderno y elegante construido con Fresh y Deno.
 
-### Usage
+## Características
 
-Make sure to install Deno: https://deno.land/manual/getting_started/installation
+- 🎨 Diseño moderno y responsivo
+- ✍️ Editor de posts con formato avanzado
+- 👥 Sistema de perfiles de usuario
+- 🔍 Búsqueda de posts
+- 🌙 Modo oscuro
+- ⚡ Rendimiento optimizado
 
-Then start the project:
+## Tecnologías
 
-```
+- [Fresh](https://fresh.deno.dev/) - Framework web moderno para Deno
+- [Deno](https://deno.land/) - Runtime de JavaScript/TypeScript
+- [TailwindCSS](https://tailwindcss.com/) - Framework CSS
+- [Supabase](https://supabase.com/) - Backend y base de datos
+
+## Uso
+
+Asegúrate de tener Deno instalado: https://deno.land/manual/getting_started/installation
+
+Luego inicia el proyecto:
+
+```bash
 deno task start
 ```
 
-This will watch the project directory and restart as necessary.
+Esto iniciará el servidor de desarrollo y se recargará automáticamente cuando detecte cambios.
