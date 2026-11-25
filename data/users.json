@@ -82,5 +82,14 @@
     "followers": [
       "nathy"
     ]
+  },
+  {
+    "username": "test",
+    "password": "test",
+    "role": "user",
+    "followers": [],
+    "following": [],
+    "description": "",
+    "profilePicture": "https://source.unsplash.com/random/200x200?portrait&sig=541"
   }
 ]
