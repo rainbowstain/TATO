@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ef4444;
+  --color-primary-dark: #b91c1c;
+  --shadow-glow: 0 0 15px rgba(239, 68, 68, 0.5);
+  --animate-fadeIn: fadeIn 0.4s ease-out forwards;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* En Tailwind 4 los botones ya no tienen cursor pointer por defecto */
+button:not(:disabled),
+[role="button"] {
+  cursor: pointer;
+}
+
+body {
+  position: relative;
+  background-color: #000000;
+  color: white;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(180, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.scale-hover:hover {
+  transform: scale(1.03);
+}
+
+.animate-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.post-card:hover,
+.scale-hover:hover {
+  box-shadow: 0 0 20px rgba(180, 0, 0, 0.2);
+}
+
+/* Contenido enriquecido de los posts */
+.post-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+.post-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+.post-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.post-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.post-content blockquote {
+  border-left: 3px solid #ef4444;
+  padding-left: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.post-content a {
+  color: #f87171;
+  text-decoration: underline;
+}
+.post-content p,
+.post-content div {
+  min-height: 1em;
+}

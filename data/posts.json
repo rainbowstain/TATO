@@ -5,7 +5,9 @@
     "content": "sfs<b>d<font face=\"Times New Roman\">fs</font>d</b>f<font face=\"Arial\">s<i>dfal</i></font><i>kfa<font color=\"#ff00ff\">dsfka<font face=\"Courier New\">d</font></font><font face=\"Courier New\">sl</font>kfas</i>df",
     "author": "eduardo",
     "date": "2025-03-25",
-    "likes": {},
+    "likes": {
+      "test": true
+    },
     "comments": []
   },
   {

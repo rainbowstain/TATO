@@ -30,7 +30,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "tato"
-          entrypoint: "main.ts"
+          entrypoint: "_fresh/server.js"
           root: "."
-          
-          

@@ -9,3 +9,7 @@
 _fresh/
 # npm dependencies
 node_modules/
+
+# Base de datos local
+data/*.db
+data/*.db-*

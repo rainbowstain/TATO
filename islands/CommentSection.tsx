@@ -1,274 +1,196 @@
-import { useState, useContext, useEffect, useRef } from "preact/hooks";
-import { Comment, User } from "../types.d.ts";
-import { UserContext } from "./UserContext.tsx";
+import { useRef, useState } from "preact/hooks";
+import type { CommentView, SessionUser } from "../lib/types.ts";
+import ProfileImage from "../components/ProfileImage.tsx";
+import { api } from "../lib/fetcher.ts";
 
 interface CommentSectionProps {
   postId: string;
-  comments: Comment[];
+  postAuthor: string;
+  comments: CommentView[];
+  viewer: SessionUser | null;
 }
 
-export default function CommentSection({ postId, comments }: CommentSectionProps) {
-  const { username, isLoggedIn } = useContext(UserContext);
-  const [newComment, setNewComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localComments, setLocalComments] = useState<Comment[]>(comments);
-  const [showComments, setShowComments] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+export default function CommentSection(
+  { postId, postAuthor, comments, viewer }: CommentSectionProps,
+) {
+  const [list, setList] = useState(comments);
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    // Cargar información de usuarios para mostrar sus fotos de perfil
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('/api/users');
-        if (response.ok) {
-          const data = await response.json();
-          setUsers(data);
-        }
-      } catch (error) {
-        console.error('Error al cargar usuarios:', error);
-      }
-    };
-    
-    fetchUsers();
-  }, []);
-
-  // Función para ajustar automáticamente la altura del textarea
-  const autoResizeTextarea = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+  const resize = () => {
+    const t = textareaRef.current;
+    if (t) {
+      t.style.height = "auto";
+      t.style.height = `${t.scrollHeight}px`;
     }
   };
 
-  // Evento para ajustar la altura cuando cambia el contenido
-  const handleTextareaChange = (e: Event) => {
-    const target = e.target as HTMLTextAreaElement;
-    setNewComment(target.value);
-    autoResizeTextarea();
-  };
-
-  const handleSubmitComment = async (e: Event) => {
+  const submit = async (e: Event) => {
     e.preventDefault();
-    if (!newComment.trim() || !isLoggedIn) return;
-
-    setIsSubmitting(true);
+    if (!text.trim() || busy) return;
+    setBusy(true);
     try {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateString = now.toLocaleDateString();
-      
-      const response = await fetch(`/api/comment/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          content: newComment,
-          author: username,
-          date: `${dateString} ${timeString}`
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al publicar comentario");
-      }
-
-      const newCommentData = await response.json();
-      
-      // Actualizar comentarios localmente sin recargar la página
-      setLocalComments([newCommentData, ...localComments]);
-      setNewComment(""); // Limpiar el campo de comentario
-      setShowComments(true); // Mostrar comentarios después de comentar
-      
-      // Resetear altura del textarea
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error al publicar comentario. Por favor, inténtalo de nuevo.");
+      const comment = await api<CommentView>(
+        `/api/posts/${postId}/comments`,
+        "POST",
+        { content: text },
+      );
+      setList([...list, comment]);
+      setText("");
+      setOpen(true);
+      if (textareaRef.current) textareaRef.current.style.height = "auto";
+    } catch (err) {
+      alert((err as Error).message);
     } finally {
-      setIsSubmitting(false);
+      setBusy(false);
     }
   };
 
-  const handleLikeComment = async (commentId: string) => {
-    if (!isLoggedIn) {
+  const toggleLike = async (id: string) => {
+    if (!viewer) {
       globalThis.location.href = "/login";
       return;
     }
-
-    // Actualizar optimistamente
-    const updatedComments = localComments.map(comment => {
-      if (comment.id === commentId) {
-        const updatedLikes = { ...comment.likes };
-        if (updatedLikes[username]) {
-          delete updatedLikes[username];
-        } else {
-          updatedLikes[username] = true;
-        }
-        return { ...comment, likes: updatedLikes };
-      }
-      return comment;
-    });
-    
-    setLocalComments(updatedComments);
-
     try {
-      const response = await fetch(`/api/comment/like/${postId}/${commentId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
-
-      if (!response.ok) {
-        // Si hay error, revertimos a los comentarios originales
-        setLocalComments(comments);
-        throw new Error("Error al actualizar me gusta en comentario");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error al actualizar me gusta en comentario. Por favor, inténtalo de nuevo.");
-      // Revertir cambios en caso de error
-      setLocalComments(comments);
+      const res = await api<{ likes: string[] }>(`/api/comments/${id}/like`);
+      setList(list.map((c) => (c.id === id ? { ...c, likes: res.likes } : c)));
+    } catch (err) {
+      alert((err as Error).message);
     }
   };
 
-  const getLikeText = (likes: { [username: string]: boolean }) => {
-    const likedUsers = Object.entries(likes)
-      .filter(([_, liked]) => liked)
-      .map(([user]) => user);
-    
-    const count = likedUsers.length;
-    
-    if (count === 0) return "";
-    if (count === 1) return `A ${likedUsers[0]} le gusta esto`;
-    if (count === 2) return `A ${likedUsers[0]} y ${likedUsers[1]} les gusta esto`;
-    return `A ${likedUsers[0]} y ${count - 1} más les gusta esto`;
+  const remove = async (id: string) => {
+    if (!confirm("¿Borrar este comentario?")) return;
+    try {
+      await api(`/api/comments/${id}`, "DELETE");
+      setList(list.filter((c) => c.id !== id));
+    } catch (err) {
+      alert((err as Error).message);
+    }
   };
 
-  // Obtener foto de perfil de un usuario
-  const getUserProfilePicture = (username: string) => {
-    const user = users.find(u => u.username === username);
-    return user?.profilePicture || null;
-  };
+  const canDelete = (c: CommentView) =>
+    !!viewer &&
+    (viewer.username === c.author || viewer.username === postAuthor ||
+      viewer.role === "admin");
 
   return (
-    <div class="mt-6 space-y-4">
-      {/* Botón para mostrar/ocultar comentarios */}
+    <div class="mt-4 space-y-4">
       <button
-        onClick={() => setShowComments(!showComments)}
-        class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+        type="button"
+        onClick={() => setOpen(!open)}
+        class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
       >
-        {showComments ? (
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-        )}
-        <span>{showComments ? 'Ocultar comentarios' : `Ver comentarios (${localComments.length})`}</span>
+        <span
+          class={`inline-block transition-transform ${open ? "rotate-90" : ""}`}
+        >
+          ▸
+        </span>
+        {open ? "Ocultar comentarios" : `Ver comentarios (${list.length})`}
       </button>
-      
-      {/* Formulario de comentarios */}
-      {isLoggedIn ? (
-        <div class="relative">
-          <form onSubmit={handleSubmitComment} class="flex items-start space-x-2">
-            <div class="w-9 h-9 flex-shrink-0">
-              {getUserProfilePicture(username) ? (
-                <img 
-                  src={getUserProfilePicture(username) || ''} 
-                  alt={`Foto de ${username}`} 
-                  class="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <div class="w-full h-full bg-red-500 rounded-full flex items-center justify-center text-white">
-                  {username.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-            <div class="flex-grow relative">
-              <textarea
-                ref={textareaRef}
-                value={newComment}
-                onChange={handleTextareaChange}
-                placeholder="Escribe un comentario..."
-                class="w-full min-h-[40px] max-h-[200px] py-2 px-3 bg-white/5 border border-white/10 text-white rounded-lg focus:outline-none focus:border-red-500 resize-none overflow-hidden"
-                rows={1}
+
+      {open && (
+        <div class="space-y-3 animate-fadeIn">
+          {list.length === 0 && (
+            <p class="text-gray-400 text-center py-2 text-sm">
+              No hay comentarios aún. ¡Sé el primero en comentar!
+            </p>
+          )}
+          {list.map((c) => (
+            <div key={c.id} class="p-3 bg-white/5 rounded-lg flex gap-3">
+              <ProfileImage
+                src={c.authorPicture}
+                username={c.author}
+                size="xs"
               />
-              <button
-                type="submit"
-                disabled={isSubmitting || !newComment.trim()}
-                class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none transition-colors"
-              >
-                {isSubmitting ? "..." : "Publicar"}
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : (
-        <div class="p-3 bg-white/5 rounded-lg text-center">
-          <a href="/login" class="text-red-400 hover:underline">Inicia sesión</a> para dejar un comentario
-        </div>
-      )}
-      
-      {/* Lista de comentarios */}
-      {showComments && localComments.length > 0 && (
-        <div class="space-y-4 mt-4 animate-fadeIn">
-          {localComments.map((comment) => (
-            <div key={comment.id} class="p-4 bg-white/5 rounded-lg">
-              <div class="flex items-start space-x-3">
-                <div class="w-9 h-9 flex-shrink-0">
-                  {getUserProfilePicture(comment.author) ? (
-                    <img 
-                      src={getUserProfilePicture(comment.author) || ''} 
-                      alt={`Foto de ${comment.author}`} 
-                      class="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <div class="w-full h-full bg-red-500 rounded-full flex items-center justify-center text-white text-sm">
-                      {comment.author.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <div class="flex-grow">
-                  <div class="flex items-center space-x-2 mb-1">
-                    <a href={`/user/${comment.author}`} class="font-medium text-red-400 hover:underline">
-                      {comment.author}
-                    </a>
-                    <span class="text-gray-400 text-xs">{comment.date}</span>
-                  </div>
-                  <p class="text-white/90 whitespace-pre-wrap break-words">{comment.content}</p>
-                  <div class="mt-2 flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <a
+                    href={`/user/${encodeURIComponent(c.author)}`}
+                    class="font-medium text-red-400 hover:underline"
+                  >
+                    {c.author}
+                  </a>
+                  <span class="text-gray-500 text-xs">{c.dateLabel}</span>
+                  {canDelete(c) && (
                     <button
                       type="button"
-                      onClick={() => handleLikeComment(comment.id)}
-                      class="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-400"
-                      disabled={!isLoggedIn}
+                      onClick={() => remove(c.id)}
+                      class="ml-auto text-xs text-gray-500 hover:text-red-400"
                     >
-                      <span>{comment.likes[username] ? "❤️" : "👍"}</span>
-                      <span>{Object.keys(comment.likes).length}</span>
+                      Borrar
                     </button>
-                    {getLikeText(comment.likes) && (
-                      <span class="text-xs text-gray-400">{getLikeText(comment.likes)}</span>
-                    )}
-                  </div>
+                  )}
                 </div>
+                <p class="text-white/90 whitespace-pre-wrap break-words">
+                  {c.content}
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    toggleLike(c.id)}
+                  class="mt-1 flex items-center gap-1 text-xs text-gray-400 hover:text-red-400"
+                  title={c.likes.join(", ")}
+                >
+                  <span
+                    class={viewer && c.likes.includes(viewer.username)
+                      ? ""
+                      : "grayscale opacity-70"}
+                  >
+                    ❤️
+                  </span>
+                  <span>{c.likes.length}</span>
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {showComments && localComments.length === 0 && (
-        <p class="text-gray-400 text-center py-4">No hay comentarios aún. ¡Sé el primero en comentar!</p>
-      )}
+      {viewer
+        ? (
+          <form onSubmit={submit} class="flex items-start gap-2">
+            <ProfileImage
+              src={viewer.profilePicture}
+              username={viewer.username}
+              size="xs"
+            />
+            <div class="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                value={text}
+                onInput={(e) => {
+                  setText((e.target as HTMLTextAreaElement).value);
+                  resize();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) submit(e);
+                }}
+                placeholder="Escribe un comentario... (Enter para enviar)"
+                maxLength={1000}
+                rows={1}
+                class="w-full min-h-[40px] max-h-[200px] py-2 pl-3 pr-24 bg-white/5 border border-white/10 text-white rounded-lg focus:outline-none focus:border-red-500 resize-none overflow-hidden"
+              />
+              <button
+                type="submit"
+                disabled={busy || !text.trim()}
+                class="absolute right-2 top-1.5 px-3 py-1 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                {busy ? "..." : "Publicar"}
+              </button>
+            </div>
+          </form>
+        )
+        : (
+          <div class="p-3 bg-white/5 rounded-lg text-center text-sm">
+            <a href="/login" class="text-red-400 hover:underline">
+              Inicia sesión
+            </a>{" "}
+            para dejar un comentario
+          </div>
+        )}
     </div>
   );
 }
